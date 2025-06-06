@@ -1,7 +1,6 @@
-# Imagem base com Python e ferramentas de compilação
 FROM python:3.11-slim
 
-# Instala dependências do sistema necessárias para dlib e face-recognition
+# Instala as dependências de sistema para dlib e face_recognition
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -13,18 +12,15 @@ RUN apt-get update && apt-get install -y \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Cria diretório da aplicação
 WORKDIR /app
 
-# Copia todos os arquivos do projeto
 COPY . .
 
-# Instala as dependências Python
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Expõe a porta usada pela API Flask
+# Expõe a porta padrão usada pelo gunicorn
 EXPOSE 5000
 
-# Comando para iniciar o Flask (ajuste conforme seu app.py)
-CMD ["python", "app.py"]
+# Comando para iniciar o app com gunicorn
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
